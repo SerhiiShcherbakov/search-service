@@ -1,0 +1,5 @@
+app:
+  security:
+    clients:
+      - name: gateway
+        key: 0d5b3d09-07a2-467a-9b3d-0907a2a67a83

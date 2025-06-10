@@ -1,0 +1,58 @@
+app:
+  security:
+    clients:
+      - name: gateway
+        key: ${GATEWAY_KEY}
+
+spring:
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URI}
+  application:
+    name: search-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /${spring.application.name}
+  error:
+    include-message: always
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ['health', 'metrics', 'prometheus']
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    display-request-duration: true
+
+rabbitmq:
+  exchanges:
+    notebooks: notebooks.events
+  routing-keys:
+    notebooks-created: notebooks.created
+    notebooks-updated: notebooks.updated
+    notebooks-deleted: notebooks.deleted
+    tags-updated: tags.updated
+    tags-deleted: tags.deleted
+  queues:
+    notebooks-changed: search.notebooks.changed
+    tags-changed: search.tags.changed

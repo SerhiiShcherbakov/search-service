@@ -1,0 +1,12 @@
+management:
+  endpoint:
+    configprops:
+      show-values: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  level:
+    root: DEBUG
