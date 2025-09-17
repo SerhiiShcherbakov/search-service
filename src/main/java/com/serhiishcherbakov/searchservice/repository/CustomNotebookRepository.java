@@ -20,7 +20,8 @@ import org.springframework.data.elasticsearch.core.query.ScriptType;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Slf4j
@@ -31,6 +32,7 @@ public class CustomNotebookRepository {
 
     private final ElasticsearchOperations elasticsearchOperations;
     private final NotebookRepository notebookRepository;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC);
 
     public SearchNotebooksResult searchNotebooks(SearchFilterRequest filter, UserDetails user) {
         BoolQuery.Builder queryBuilder = QueryBuilders.bool();
@@ -77,12 +79,12 @@ public class CustomNotebookRepository {
                 .build();
     }
 
-    public void saveNotebooks(List<Notebook> notebooks) {
-        notebookRepository.saveAll(notebooks);
+    public void saveNotebook(Notebook notebook) {
+        notebookRepository.save(notebook);
     }
 
-    public void deleteNotebooks(List<Notebook> notebooks) {
-        notebookRepository.deleteAll(notebooks);
+    public void deleteNotebook(Notebook notebook) {
+        notebookRepository.delete(notebook);
     }
 
     public void saveTag(Tag tag) {
@@ -102,8 +104,8 @@ public class CustomNotebookRepository {
                 "tagId", tag.getId(),
                 "title", tag.getTitle(),
                 "color", tag.getColor(),
-                "createdAt", tag.getCreatedAt().toString(),
-                "updatedAt", tag.getUpdatedAt().toString()
+                "createdAt", formatter.format(tag.getCreatedAt()),
+                "updatedAt", formatter.format(tag.getUpdatedAt())
         );
 
         elasticsearchOperations.updateByQuery(createTagUpdateQuery(tag, script, params), IndexCoordinates.of(INDEX_NAME));

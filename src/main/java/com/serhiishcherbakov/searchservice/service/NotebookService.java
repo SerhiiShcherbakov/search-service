@@ -9,8 +9,6 @@ import com.serhiishcherbakov.searchservice.security.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class NotebookService {
@@ -20,12 +18,12 @@ public class NotebookService {
         return customNotebookRepository.searchNotebooks(filter, userDetails);
     }
 
-    public void saveNotebooks(List<Notebook> notebooks) {
-        customNotebookRepository.saveNotebooks(notebooks);
+    public void saveNotebook(Notebook notebook) {
+        customNotebookRepository.saveNotebook(notebook);
     }
 
-    public void deleteNotebooks(List<Notebook> notebooks) {
-        customNotebookRepository.deleteNotebooks(notebooks);
+    public void deleteNotebook(Notebook notebook) {
+        customNotebookRepository.deleteNotebook(notebook);
     }
 
     public void saveTag(Tag tag) {

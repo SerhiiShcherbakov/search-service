@@ -18,32 +18,28 @@ public class RabbitListeners {
     private final NotebookService notebookService;
 
     @RabbitListener(queues = "${rabbitmq.queues.notebooks-changed}")
-    public void onNotebookSaved(BaseMessage<List<Notebook>> message) {
-        log.info("Received notebook message: type={}, payload_size={}", message.getType(), message.getPayload().size());
+    public void onNotebookChange(BaseMessage<Notebook> message) {
+        log.info("Received notebook message: notebook={}, type={}", message.getData().getId(), message.getType());
 
         switch (message.getType()) {
-            case NOTEBOOK_CREATED, NOTEBOOK_UPDATED -> notebookService.saveNotebooks(message.getPayload());
-            case NOTEBOOK_DELETED -> notebookService.deleteNotebooks(message.getPayload());
+            case NOTEBOOK_CREATED, NOTEBOOK_UPDATED -> notebookService.saveNotebook(message.getData());
+            case NOTEBOOK_DELETED -> notebookService.deleteNotebook(message.getData());
+            default -> throw new IllegalArgumentException("Incompatible event type for event=" + message.getId());
         }
 
-        log.info("Successfully processed {} notebooks for {}", message.getPayload().size(), message.getType());
+        log.info("Successfully processed notebook event {} for {}", message.getId(), message.getType());
     }
 
     @RabbitListener(queues = "${rabbitmq.queues.tags-changed}")
-    public void onNotebookDeleted(BaseMessage<List<Tag>> message) {
-        log.info("Received tag message: type={}, payload_size={}", message.getType(), message.getPayload().size());
+    public void onTagChange(BaseMessage<Tag> message) {
+        log.info("Received tag message: tag={}, type={}", message.getData().getId(), message.getType());
 
-        message.getPayload().forEach(tag -> {
-            try {
-                switch (message.getType()) {
-                    case TAG_CREATED, TAG_UPDATED -> notebookService.saveTag(tag);
-                    case TAG_DELETED -> notebookService.deleteTag(tag);
-                }
-            } catch (Exception e) {
-                log.error("Failed to process tag message: {}", e.getMessage());
-            }
-        });
+        switch (message.getType()) {
+            case TAG_UPDATED -> notebookService.saveTag(message.getData());
+            case TAG_DELETED -> notebookService.deleteTag(message.getData());
+            default -> throw new IllegalArgumentException("Incompatible event type for event=" + message.getId());
+        }
 
-        log.info("Successfully processed {} tags for {}", message.getPayload().size(), message.getType());
+        log.info("Successfully processed tag event {} for {}", message.getId(), message.getType());
     }
 }

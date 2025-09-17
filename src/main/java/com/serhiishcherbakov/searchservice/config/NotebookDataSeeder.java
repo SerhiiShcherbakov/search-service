@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @Profile("local")
 @RequiredArgsConstructor
-public class NotebookDaataSeeder implements CommandLineRunner {
+public class NotebookDataSeeder implements CommandLineRunner {
     private final NotebookRepository notebookRepository;
 
     @Override

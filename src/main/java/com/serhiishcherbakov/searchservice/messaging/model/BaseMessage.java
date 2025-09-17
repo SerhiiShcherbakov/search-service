@@ -8,7 +8,8 @@ import java.time.Instant;
 @Setter
 @Getter
 public class BaseMessage<T> {
+    private String id;
     private EventType type;
-    private Instant timestamp;
-    private T payload;
+    private Instant createdAt;
+    private T data;
 }
